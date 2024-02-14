@@ -1,0 +1,69 @@
+﻿@page "/"
+@using global::TicTacToe.Implementations
+@using global::TicTacToe.Interfaces
+
+<h1 style="text-align: center; margin-bottom: 20px;">Tic Tac Toe</h1>
+
+<div style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+    <label for="boardSize">Enter board size:</label>
+    <input type="number" id="boardSize" @bind="@boardSize" min="3" max="10" step="1" />
+    <button @onclick="StartGame">Start Game</button>
+
+    @if (game != null)
+    {
+        <div style="margin-top: 20px;">
+            <div>
+                <p style="font-size: 20px;">Current Player: @(_currentPlayer?.Mark)</p>
+                <table>
+                    @for (int i = 0; i < game.BoardSize; i++)
+                    {
+                        <tr>
+                            @for (int j = 0; j < game.BoardSize; j++)
+                            {
+                                int row = i;
+                                int col = j;
+                                <td style="width: 50px; height: 50px;">
+                                    <button style="width: 100%; height: 100%; font-size: 24px; background-color: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                                            @onclick="(() => MakeMove(row, col))"
+                                            disabled="@(!_board.IsMoveValid(row, col))">
+                                        @if (_board.Cells[row, col].Player != null)
+                                        {
+                                            @_board.Cells[row, col].Player.Mark
+                                        }
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                @if (game.IsGameOver)
+                {
+                    <p style="font-size: 24px; color: #333;">The game is over.</p>
+                    <p style="font-size: 24px; color: #333;">@((game.Winner == null) ? "It's a draw!" : $"{game.Winner.Mark} wins!")</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private IGame? game;
+    private IPlayer? _currentPlayer;
+    private int boardSize = 3;
+    private IBoard _board;
+
+    void StartGame()
+    {
+        _board = new TicTacToeBoard(boardSize);
+        game = new TicTacToeGame(_board);
+        _currentPlayer = new TicTacToePlayer(PlayerMark.X);
+    }
+
+    void MakeMove(int row, int col)
+    {
+        game.MakeMove(row, col);
+        _currentPlayer = game.IsGameOver ? null : (_currentPlayer?.Mark == PlayerMark.X ? new TicTacToePlayer(PlayerMark.O) : new TicTacToePlayer(PlayerMark.X));
+    }
+}
