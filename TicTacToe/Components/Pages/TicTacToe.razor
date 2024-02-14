@@ -13,7 +13,7 @@
     {
         <div style="margin-top: 20px;">
             <div>
-                <p style="font-size: 20px;">Current Player: @(_currentPlayer?.Mark)</p>
+                <p style="font-size: 20px;">Current Player: @(_currentPlayer != null ? _currentPlayer.Mark.ToString() : "")</p>
                 <table>
                     @for (int i = 0; i < game.BoardSize; i++)
                     {
@@ -25,10 +25,10 @@
                                 <td style="width: 50px; height: 50px;">
                                     <button style="width: 100%; height: 100%; font-size: 24px; background-color: #fff; border: 1px solid #ccc; border-radius: 5px;"
                                             @onclick="(() => MakeMove(row, col))"
-                                            disabled="@(!_board.IsMoveValid(row, col))">
-                                        @if (_board.Cells[row, col].Player != null)
+                                            disabled="@(!_board?.IsMoveValid(row, col))">
+                                        @if (_board?.Cells[row, col].Player != null)
                                         {
-                                            @_board.Cells[row, col].Player.Mark
+                                            @_board?.Cells[row, col].Player?.Mark
                                         }
                                     </button>
                                 </td>
@@ -52,7 +52,7 @@
     private IGame? game;
     private IPlayer? _currentPlayer;
     private int boardSize = 3;
-    private IBoard _board;
+    private IBoard? _board;
 
     void StartGame()
     {
@@ -63,7 +63,13 @@
 
     void MakeMove(int row, int col)
     {
-        game.MakeMove(row, col);
-        _currentPlayer = game.IsGameOver ? null : (_currentPlayer?.Mark == PlayerMark.X ? new TicTacToePlayer(PlayerMark.O) : new TicTacToePlayer(PlayerMark.X));
+        game?.MakeMove(row, col);
+        _currentPlayer = game != null && !game.IsGameOver
+    ? (_currentPlayer != null && _currentPlayer.Mark == PlayerMark.X
+        ? new TicTacToePlayer(PlayerMark.O)
+        : (_currentPlayer != null ? new TicTacToePlayer(PlayerMark.X) : null))
+    : null;
+
+
     }
 }

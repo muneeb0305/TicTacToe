@@ -2,7 +2,6 @@
 {
     public enum PlayerMark
     {
-        X,
-        O
+        X, O
     }
 }

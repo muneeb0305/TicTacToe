@@ -3,11 +3,11 @@
     public interface IGame
     {
         int BoardSize { get; }
-        IPlayer CurrentPlayer { get; }
         bool IsGameOver { get; }
-        IPlayer? Winner { get; }
-
         void StartGame();
         void MakeMove(int row, int col);
+        IPlayer CurrentPlayer { get; }
+        IPlayer? Winner { get; }
+
     }
 }
